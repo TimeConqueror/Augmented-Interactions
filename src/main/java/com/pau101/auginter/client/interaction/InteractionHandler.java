@@ -88,28 +88,30 @@ public final class InteractionHandler {
 		World world = mc.world;
 		EntityPlayer player = mc.player;
 		RayTraceResult mouseOver = mc.objectMouseOver;
-		InteractionType type = raytraceInteractionTypeLookup.get(mouseOver.typeOfHit);
-		InitiationResult<?> result = null;
-		if (type != null) {
-			result = getInteraction(world, player, hand, mouseOver, interactions.get(type));
-		}
-		if (result == null) {
-			type = InteractionType.USE;
-			result = getInteraction(world, player, hand, mouseOver, interactions.get(type));
-		}
-		if (result != null) {
-			if (!result.isEnabled(animationWarden)) {
-				return false;
+		if(mouseOver != null){
+			InteractionType type = raytraceInteractionTypeLookup.get(mouseOver.typeOfHit);
+			InitiationResult<?> result = null;
+			if (type != null) {
+				result = getInteraction(world, player, hand, mouseOver, interactions.get(type));
 			}
-			ItemStack stack = player.getHeldItem(hand);
-			if (mouseOver.getBlockPos() != null && result.allowBlockActivation()) {
-				boolean act = blockImplementsOnActivated.getUnchecked(mc.world.getBlockState(mouseOver.getBlockPos()).getBlock());
-				if (act && (!player.isSneaking() || stack.getItem().doesSneakBypassUse(stack, world, mouseOver.getBlockPos(), player))) {
+			if (result == null) {
+				type = InteractionType.USE;
+				result = getInteraction(world, player, hand, mouseOver, interactions.get(type));
+			}
+			if (result != null) {
+				if (!result.isEnabled(animationWarden)) {
 					return false;
 				}
+				ItemStack stack = player.getHeldItem(hand);
+				if (mouseOver.getBlockPos() != null && result.allowBlockActivation()) {
+					boolean act = blockImplementsOnActivated.getUnchecked(mc.world.getBlockState(mouseOver.getBlockPos()).getBlock());
+					if (act && (!player.isSneaking() || stack.getItem().doesSneakBypassUse(stack, world, mouseOver.getBlockPos(), player))) {
+						return false;
+					}
+				}
+				renderer.start(hand, result.createAnimation(world, player, stack, hand == EnumHand.OFF_HAND ? -1 : player.inventory.currentItem, hand, mouseOver));
+				return true;
 			}
-			renderer.start(hand, result.createAnimation(world, player, stack, hand == EnumHand.OFF_HAND ? -1 : player.inventory.currentItem, hand, mouseOver));
-			return true;
 		}
 		return false;
 	}

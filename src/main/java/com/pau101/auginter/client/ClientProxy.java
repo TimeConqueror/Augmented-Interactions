@@ -43,7 +43,7 @@ public final class ClientProxy extends Proxy implements AnimationWarden {
 	private void macgyverTheUseItemHook() {
 		GameSettings settings = Minecraft.getMinecraft().gameSettings;
 		KeyBinding useItem = settings.keyBindUseItem;
-		((KeyBindingMap) ReflectionHelper.getPrivateValue(KeyBinding.class, null, "field_74514_b", "HASH")).removeKey(useItem);
+		((KeyBindingMap) ReflectionHelper.getPrivateValue(KeyBinding.class, null, "HASH", "field_74514_b")).removeKey(useItem);
 		settings.keyBindUseItem = new KeyBinding(useItem.getKeyDescription(), useItem.getKeyCode(), useItem.getKeyCategory()) {
 			@Override
 			public boolean isPressed() {
